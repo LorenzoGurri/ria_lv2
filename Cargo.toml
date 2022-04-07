@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib"]
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lv2 = "0.6.0"
+lv2 = {version = "0.6.0", features = ["full"]}
+biquad = "0.4.2"
