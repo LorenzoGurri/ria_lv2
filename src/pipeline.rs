@@ -15,7 +15,6 @@ use std::collections::LinkedList;
 /// and thus trades a small performance hit for
 /// easier usage and simpler code.
 pub struct Pipeline {
-    fs: f32,
     effects: LinkedList<Box<dyn Effect + Send + Sync>>,
 }
 
@@ -23,10 +22,10 @@ impl Pipeline {
     /// # Params
     ///
     /// `fs` - The sample rate (e.g. 44100)
-    pub fn new(fs: f32) -> Pipeline {
+    pub fn new() -> Pipeline {
         let mut effects = LinkedList::new();
         effects.push_back(Box::new(AllPass) as Box<dyn Effect + Send + Sync>);
-        Self { fs, effects }
+        Self { effects }
     }
 
     /// `create` takes a vector of effects and puts them in series.
@@ -35,15 +34,8 @@ impl Pipeline {
     ///
     /// `effects` - The collection of effects we want to use.
     /// Note that they must be cast to a Box<dyn Effect + Send + Sync>>.
-    pub fn create(&mut self, effects: LinkedList<Box<dyn Effect + Send + Sync>>) {
+    pub fn set(&mut self, effects: LinkedList<Box<dyn Effect + Send + Sync>>) {
         self.effects = effects;
-    }
-
-    /// `tear_down` removes all effects currenly enabled and adds
-    /// an all pass filter.
-    pub fn tear_down(&mut self) {
-        self.effects = LinkedList::new();
-        self.effects.push_back(Box::new(AllPass));
     }
 
     /// `run` passes the input sample `in_sample` through each effect.
