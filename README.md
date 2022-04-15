@@ -2,5 +2,4 @@
 
 A plugin that lets you change effects dynamically
 
-## Currently in BETA!
-
+## Currently in ALPHA!
