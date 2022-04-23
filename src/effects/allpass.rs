@@ -16,7 +16,7 @@ impl Effect for AllPass {
     /// # Returns
     ///
     /// The input sample `in_sample`.
-    fn run(&mut self, in_sample: f32) -> f32 {
-        in_sample
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32) {
+        in_samples
     }
 }

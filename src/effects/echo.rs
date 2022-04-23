@@ -13,7 +13,7 @@ struct Delay {
     // delay in seconds
     delay: f32,
     // buffer of samples
-    buffer: LinkedList<f32>,
+    buffer: LinkedList<(f32, f32)>,
 }
 
 impl Delay {
@@ -27,12 +27,12 @@ impl Delay {
 
     // Push samples into `buffer` until it's full,
     //   then start returning them
-    fn run(&mut self, in_sample: f32) -> f32 {
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32) {
         if self.buffer.len() < (self.delay * self.fs) as usize {
-            self.buffer.push_back(in_sample);
-            return in_sample;
+            self.buffer.push_back(in_samples);
+            return in_samples;
         }
-        self.buffer.pop_front().unwrap_or(0.)
+        self.buffer.pop_front().unwrap_or((0., 0.))
     }
 }
 
@@ -118,12 +118,14 @@ impl Effect for Echo {
     ///
     /// The `in_sample` plus the delays we have
     /// added to it to make an echo effect.
-    fn run(&mut self, in_sample: f32) -> f32 {
-        let mut out_sample: f32 = in_sample;
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32) {
+        let mut out_samples: (f32, f32) = in_samples;
 
         for i in 0..self.delays.len() {
-            out_sample += self.decays[i] * self.delays[i].run(in_sample);
+            let delays = self.delays[i].run(in_samples);
+            out_samples.0 += self.decays[i] * delays.0;
+            out_samples.1 += self.decays[i] * delays.1;
         }
-        out_sample
+        out_samples
     }
 }

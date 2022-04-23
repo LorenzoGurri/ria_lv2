@@ -17,8 +17,10 @@ use effects::Effect;
 #[derive(PortCollection)]
 struct Ports {
     control: InputPort<Control>,
-    input: InputPort<Audio>,
-    output: OutputPort<Audio>,
+    lin: InputPort<Audio>,
+    rin: InputPort<Audio>,
+    lout: OutputPort<Audio>,
+    rout: OutputPort<Audio>,
 }
 
 // Requested features
@@ -29,7 +31,7 @@ struct AudioFeatures<'a> {
 }
 
 // RiaLV2 Plugin Struct
-#[uri("https://github.com/RustAudio/rust-lv2/tree/master/docs/amp")]
+#[uri("https://github.com/LorenzoGurri/ria_lv2")]
 struct RiaLV2 {
     fs: f32,
     pline: pipeline::Pipeline,
@@ -54,9 +56,16 @@ impl Plugin for RiaLV2 {
             }
         }
 
+        let in_samples = Iterator::zip(ports.lin.iter(), ports.rin.iter());
+        let out_samples = Iterator::zip(ports.lout.iter_mut(), ports.rout.iter_mut());
+
         // process samples with the effects in Pipeline
-        for (out_sample, in_sample) in Iterator::zip(ports.output.iter_mut(), ports.input.iter()) {
-            *out_sample = self.pline.run(*in_sample, *ports.control);
+        for (in_data, out_data) in Iterator::zip(in_samples, out_samples) {
+            let (left_in, right_in) = in_data;
+            // let (left_out, right_out) = out_data;
+            let (left_out, right_out) = self.pline.run(*left_in, *right_in, *ports.control);
+            *out_data.0 = left_out;
+            *out_data.1 = right_out;
         }
     }
 

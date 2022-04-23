@@ -34,9 +34,9 @@ impl Effect for AmpLFO {
     ///
     /// The modulated `in_sample` according to where
     /// the LFO is on its sinusoid.
-    fn run(&mut self, in_sample: f32) -> f32 {
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32) {
         let out = ((2. * std::f32::consts::PI * self.x * self.freq / self.fs).cos() + 1.) / 2.;
         self.x = (self.x + 1.) % (self.fs / self.freq);
-        out * in_sample
+        (out * in_samples.0, out * in_samples.1 )
     }
 }

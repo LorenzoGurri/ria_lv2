@@ -43,12 +43,12 @@ impl Pipeline {
     /// # Params
     ///
     /// `in_sample` - The input sample
-    pub fn run(&mut self, in_sample: f32, toggle: f32) -> f32 {
+    pub fn run(&mut self, left_sample: f32, right_sample: f32, toggle: f32) -> (f32, f32) {
         if toggle <= 0. {
-            return in_sample;
+            return (left_sample, right_sample);
         }
 
-        let mut out: f32 = in_sample;
+        let mut out: (f32, f32) = (left_sample, right_sample);
         for effect in &mut self.effects {
             out = effect.run(out);
         }

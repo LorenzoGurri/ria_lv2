@@ -11,7 +11,7 @@
 /// easier to combine different effects in series at the cost
 /// of a small performance hit.
 pub trait Effect {
-    fn run(&mut self, in_sample: f32) -> f32;
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32);
 }
 
 pub mod allpass;

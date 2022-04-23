@@ -8,7 +8,8 @@ use crate::effects::Effect;
 use biquad::*;
 
 pub struct IIRLowPass {
-    bq: DirectForm2Transposed<f32>,
+    lbq: DirectForm2Transposed<f32>,
+    rbq: DirectForm2Transposed<f32>,
 }
 
 /// The Low Pass Filter
@@ -32,7 +33,8 @@ impl IIRLowPass {
         .unwrap();
 
         Self {
-            bq: DirectForm2Transposed::<f32>::new(coeffs),
+            lbq: DirectForm2Transposed::<f32>::new(coeffs),
+            rbq: DirectForm2Transposed::<f32>::new(coeffs),
         }
     }
 }
@@ -47,7 +49,7 @@ impl Effect for IIRLowPass {
     /// `y[n] = b0*x[n] + b1*x[n-1] + b2*x[n-2] + a1*y[n-1] + a2*y[n-2]`
     ///
     /// where the `a`s and `b`s are calculated based on the `cutoff` frequency.
-    fn run(&mut self, in_sample: f32) -> f32 {
-        self.bq.run(in_sample)
+    fn run(&mut self, in_samples: (f32, f32)) -> (f32, f32) {
+        (self.lbq.run(in_samples.0), self.rbq.run(in_samples.1))
     }
 }
